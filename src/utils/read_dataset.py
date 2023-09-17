@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import holidays
 import pandas as pd
 
 path = ""
@@ -28,12 +29,13 @@ def read_datasets(
     df.columns = [
         col.lower() if col in [date_column_name] else col for col in df.columns
     ]
+    jp_holidays = holidays.Japan(years=[2020, 2021, 2022, 2023])
+
+    df["weekend"] = df["date"].apply(
+        lambda x: 1 if x.weekday() >= 5 or x in jp_holidays else 0
+    )
     return df[target_columns]
 
 
-target_columns = [
-    "チャネルA",
-    "チャネルB",
-    "チャネルC",
-]
-df = read_datasets(DATA_DIR / "data_mmm.csv", "date")[target_columns]
+# target_columns = ["date", "チャネルA", "チャネルB", "チャネルC", "売上", "weekend"]
+# df = read_datasets(DATA_DIR / "data_mmm.csv", "date")[target_columns]
