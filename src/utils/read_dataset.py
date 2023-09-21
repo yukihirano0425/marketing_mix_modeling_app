@@ -25,13 +25,11 @@ def read_datasets(
         行: 1日分の営業チャネル費用 + 売上
         列：日付 + 各広告チャネル + 売上
     """
-    df = pd.read_csv(file_name, parse_dates=[date_column_name])
-    df.columns = [
-        col.lower() if col in [date_column_name] else col for col in df.columns
-    ]
+    df = pd.read_csv(
+        file_name, parse_dates=[date_column_name], index_col=date_column_name
+    ).reset_index()
     jp_holidays = holidays.Japan(years=[2020, 2021, 2022, 2023])
-
-    df["weekend"] = df["date"].apply(
+    df["weekend"] = df[date_column_name].apply(
         lambda x: 1 if x.weekday() >= 5 or x in jp_holidays else 0
     )
     return df[target_columns]
